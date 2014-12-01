@@ -10,18 +10,16 @@ import android.widget.TextView;
 
 
 public class Fotos extends Activity {
-    TextView tvTitulo;
     Inmueble inm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fotos);
-        this.tvTitulo = (TextView)findViewById(R.id.tvTituloFoto);
         inm =(Inmueble) getIntent().getExtras().getSerializable("inmueble");
-        FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment);
+        FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment4);
         String s = inm.getDireccion()+", "+inm.getLocalidad();
-        tvTitulo.setText(s);
+        fd.setText(s);
     }
 
 
