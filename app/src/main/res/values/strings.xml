@@ -16,5 +16,6 @@
     <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
     <string name="title_activity_fotos">Fotos</string>
+    <string name="foto">Añadir foto</string>
 
 </resources>

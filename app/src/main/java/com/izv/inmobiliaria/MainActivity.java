@@ -4,7 +4,9 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -15,7 +17,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
@@ -26,7 +34,9 @@ public class MainActivity extends Activity {
     private static final int CREAR=0;
     private static final int MODIFICAR=1;
     private final int DETALLE = 2;
+    private final int FOTO = 3;
     ListView lv;
+    Inmueble inmuebleFoto;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -36,6 +46,7 @@ public class MainActivity extends Activity {
             String direccion;
             String tipo;
             String precio;
+            long index=0;
             Inmueble i;
             in.open();
             switch (requestCode){
@@ -51,7 +62,7 @@ public class MainActivity extends Activity {
                     break;
                 case MODIFICAR:
                     //Hago cosas
-                    long index = data.getLongExtra("index",-1);
+                    index = data.getLongExtra("index",-1);
                     localidad = data.getStringExtra("localidad");
                     direccion = data.getStringExtra("direccion");
                     tipo = data.getStringExtra("tipo");
@@ -64,7 +75,38 @@ public class MainActivity extends Activity {
                 case DETALLE:
                     i =(Inmueble) data.getSerializableExtra("inmueble");
                     FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment3);
-                    fd.setText(i.getDireccion()+", "+i.getLocalidad());
+                    fd.setText(i.getDireccion() + ", " + i.getLocalidad());
+                    break;
+                case FOTO:
+                    /*Bitmap foto = (Bitmap)data.getExtras().get("data");
+                    FileOutputStream salida;
+                    i = inmuebleFoto;
+                    Log.v("ERROR",i.toString());
+                    try {
+                        Date fechaHora=new Date();
+                        String fecha=fechaHora.toString();
+                        salida = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                                + "/inmueble_"+"_"+fecha+".jpg");
+                        foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
+                    } catch (FileNotFoundException e) {
+                        Log.v("ERROR","ERROR");
+                    }*/
+                    Bitmap foto = (Bitmap)data.getExtras().get("data");
+                    FileOutputStream salida;
+                    i = inmuebleFoto;
+                    Calendar cal = new GregorianCalendar();
+                    Date date = cal.getTime();
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+                    String formatteDate = df.format(date);
+                    try {
+                        salida = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                                +"/inmueble_"+i.getId()+"_"+formatteDate+".jpg");
+                        foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
+                    } catch (FileNotFoundException e) {
+                    }
+
+
+                    break;
             }
         }else {
         }
@@ -171,6 +213,10 @@ public class MainActivity extends Activity {
             b.putInt("index", index);
             intent.putExtras(b);
             startActivityForResult(intent, MODIFICAR);
+        }else if (id==R.id.action_foto){
+            inmuebleFoto = i;
+            Intent intent = new Intent ("android.media.action.IMAGE_CAPTURE");
+            startActivityForResult(intent, FOTO);
         }
         return super.onContextItemSelected(item);
     }

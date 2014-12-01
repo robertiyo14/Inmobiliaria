@@ -9,5 +9,9 @@
         android:title="@string/borrar"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/action_foto"
+        android:title="@string/foto"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 
 </menu>
