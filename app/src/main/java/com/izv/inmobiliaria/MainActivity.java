@@ -40,6 +40,9 @@ public class MainActivity extends Activity {
     private final int FOTO = 3;
     ListView lv;
     Inmueble inmuebleFoto;
+    ArrayList <File> fotos;
+    int posActual;
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -118,12 +121,14 @@ public class MainActivity extends Activity {
         registerForContextMenu(lv);
         final ListView lv = (ListView)findViewById(R.id.lvLista);
         final FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment3);
+        posActual = 0;
+
 
         final boolean horizontal = fd!=null && fd.isInLayout();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View v,int pos, long id) {
                 List<Inmueble> al = in.select(null,null,null);
-                ArrayList <File>fotos = new ArrayList<File>();
+                fotos = new ArrayList<File>();
                 String ruta = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath();
                 File dir = new  File(ruta);
                 File[] fotos1 = dir.listFiles();
@@ -137,10 +142,41 @@ public class MainActivity extends Activity {
                 }
                 Inmueble inm = al.get(pos);
                 if(horizontal){
+                    Button btSiguiente = (Button)findViewById(R.id.btSiguiente);
+                    Button btAnterior = (Button)findViewById(R.id.btAnterior);
+                    btSiguiente.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int posMax;
+                            posMax=fotos.size()-1;
+                            if(posActual+1<=posMax){
+                                fd.iv.setImageURI(Uri.fromFile(fotos.get(posActual+1)));
+                                posActual++;
+                            }else{
+                                fd.iv.setImageURI(Uri.fromFile(fotos.get(0)));
+                                posActual=0;
+                            }
+                        }
+                    });
+                    btAnterior.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int posMax;
+                            posMax=fotos.size()-1;
+                            if(posActual-1>=0){
+                                fd.iv.setImageURI(Uri.fromFile(fotos.get(posActual-1)));
+                                posActual--;
+                            }else{
+                                fd.iv.setImageURI(Uri.fromFile(fotos.get(posMax)));
+                                posActual=posMax;
+                            }
+                        }
+                    });
                     fd.setText(inm.getDireccion()+", "+inm.getLocalidad());
                     if(fotos.size()>0){
                         fd.iv.setImageURI(Uri.fromFile(fotos.get(0)));
                     }
+
                 }else{
                     Intent i = new Intent(MainActivity.this,Fotos.class);
                     i.putExtra("inmueble",inm);
