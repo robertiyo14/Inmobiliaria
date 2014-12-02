@@ -6,7 +6,10 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.File;
 
 
 /**
@@ -15,6 +18,7 @@ import android.widget.TextView;
 public class FragmentoDetalle extends Fragment {
 
     TextView tvTituloDetalle;
+    ImageView iv;
     View v;
 
     public FragmentoDetalle() {
@@ -26,6 +30,7 @@ public class FragmentoDetalle extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_fragmento_detalle, container, false);
+        iv =(ImageView) v.findViewById(R.id.imageView);
         return v;
     }
 
@@ -33,8 +38,4 @@ public class FragmentoDetalle extends Fragment {
         this.tvTituloDetalle = (TextView)v.findViewById(R.id.tvTituloDetalle);
         this.tvTituloDetalle.setText(s);
     }
-
-
-
-
 }

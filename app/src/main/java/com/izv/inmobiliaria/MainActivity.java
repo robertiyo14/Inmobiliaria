@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -14,9 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -74,23 +77,15 @@ public class MainActivity extends Activity {
                     break;
                 case DETALLE:
                     i =(Inmueble) data.getSerializableExtra("inmueble");
+                    ArrayList <File>fotos = new ArrayList<File>();
                     FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment3);
+                    fotos = (ArrayList)data.getExtras().get("fotos");
+                    if(fotos.size()>0){
+                        fd.iv.setImageURI(Uri.fromFile(fotos.get(0)));
+                    }
                     fd.setText(i.getDireccion() + ", " + i.getLocalidad());
                     break;
                 case FOTO:
-                    /*Bitmap foto = (Bitmap)data.getExtras().get("data");
-                    FileOutputStream salida;
-                    i = inmuebleFoto;
-                    Log.v("ERROR",i.toString());
-                    try {
-                        Date fechaHora=new Date();
-                        String fecha=fechaHora.toString();
-                        salida = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-                                + "/inmueble_"+"_"+fecha+".jpg");
-                        foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
-                    } catch (FileNotFoundException e) {
-                        Log.v("ERROR","ERROR");
-                    }*/
                     Bitmap foto = (Bitmap)data.getExtras().get("data");
                     FileOutputStream salida;
                     i = inmuebleFoto;
@@ -99,9 +94,9 @@ public class MainActivity extends Activity {
                     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
                     String formatteDate = df.format(date);
                     try {
-                        salida = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                        salida = new FileOutputStream(getExternalFilesDir(Environment.DIRECTORY_DCIM)
                                 +"/inmueble_"+i.getId()+"_"+formatteDate+".jpg");
-                        foto.compress(Bitmap.CompressFormat.JPEG, 90, salida);
+                        foto.compress(Bitmap.CompressFormat.JPEG, 0, salida);
                     } catch (FileNotFoundException e) {
                     }
 
@@ -112,6 +107,8 @@ public class MainActivity extends Activity {
         }
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,18 +117,35 @@ public class MainActivity extends Activity {
         lv=(ListView)findViewById(R.id.lvLista);
         registerForContextMenu(lv);
         final ListView lv = (ListView)findViewById(R.id.lvLista);
-        final FragmentoDetalle f2 = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment3);
-        final boolean horizontal = f2!=null && f2.isInLayout();
+        final FragmentoDetalle fd = (FragmentoDetalle)getFragmentManager().findFragmentById(R.id.fragment3);
+
+        final boolean horizontal = fd!=null && fd.isInLayout();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> av, View v,int pos, long id) {
                 List<Inmueble> al = in.select(null,null,null);
+                ArrayList <File>fotos = new ArrayList<File>();
+                String ruta = getExternalFilesDir(Environment.DIRECTORY_DCIM).getPath();
+                File dir = new  File(ruta);
+                File[] fotos1 = dir.listFiles();
+                for (int i = 0; i < fotos1.length; i++) {
+                    String idIn="";
+                    idIn=fotos1[i].getName().split("_")[1];
+                    Log.v("ID:","ID:"+idIn);
+                    if(idIn.equals(al.get(pos).getId()+"")){
+                        fotos.add(fotos1[i]);
+                    }
+                }
                 Inmueble inm = al.get(pos);
                 if(horizontal){
-                    f2.setText(inm.getDireccion()+", "+inm.getLocalidad());
+                    fd.setText(inm.getDireccion()+", "+inm.getLocalidad());
+                    if(fotos.size()>0){
+                        fd.iv.setImageURI(Uri.fromFile(fotos.get(0)));
+                    }
                 }else{
                     Intent i = new Intent(MainActivity.this,Fotos.class);
                     i.putExtra("inmueble",inm);
-                    startActivityForResult(i,DETALLE);
+                    i.putExtra("fotos", fotos);
+                    startActivityForResult(i, DETALLE);
                 }
             }
         });

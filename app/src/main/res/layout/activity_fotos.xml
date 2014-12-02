@@ -7,8 +7,8 @@
     tools:context="com.izv.inmobiliaria.Fotos">
 
     <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:name="com.izv.inmobiliaria.FragmentoDetalle"
         android:id="@+id/fragment4"
         android:layout_alignParentTop="true"
