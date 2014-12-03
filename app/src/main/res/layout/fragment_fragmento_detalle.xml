@@ -24,7 +24,8 @@
             android:layout_height="match_parent"
             android:id="@+id/imageView"
             android:layout_gravity="center_horizontal"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="50dp" />
 
     </LinearLayout>
 
